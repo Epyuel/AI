@@ -1,4 +1,3 @@
-# For this specific assignment,Nodes aren't considered to be alone(with out edges).
 class Node:
     def __init__(self,data):
         self.data=data
@@ -23,6 +22,9 @@ class Graph(dict):
             self.graph[node1.data].append((node2.data,cost))
             self.graph[node2.data].append((node1.data,cost))
 
+    def add_only_node(self,node):
+        self.graph[node]=[]
+
     def remove_node(self,node):
         node=Node(node)
         if node.data in self.graph:
@@ -45,5 +47,5 @@ class Graph(dict):
         else:
             print(f"There is no path between {node1.data} and {node2.data}")
 
-    
+        
 

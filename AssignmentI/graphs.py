@@ -23,11 +23,14 @@ class Romenia:
         self.romenia.add("Urziceni","Vaslui",142)
         self.romenia.add("Hirsova","Eforie",86)
         self.romenia.add("Mehadia","Drobeta",75)
+        self.romenia.add("Drobeta","Craiova",120)       
         self.romenia.add("Bucharest","Giurgiu",90)
         self.romenia.add("Vaslui","Iasi",92)
         self.romenia.add("Iasi","Neamt",87)
 
 
-
+# a=Romenia()
+# a.add()
+# print(a.romenia.graph)
 
 

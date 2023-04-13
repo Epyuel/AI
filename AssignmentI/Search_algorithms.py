@@ -1,36 +1,40 @@
-import graph_generator as gg
+import heapq
+import itertools
 import time
+from collections import deque
 from numpy import sin, cos, arccos, pi, round
 
-# In the Algorithms class dfs method(implemented using recursion) make use of the class property,
-# hence in the driver code it is mandatory to use different instances(objects) of the class.
 class Algorithms:
-    def __init__(self):
-        self.visited=[]
-        self.path=[]
-
     def dfs(self,graph,start,goal,heuristics=None):
-        if len(self.visited)==0:
-            self.visited.append(start)
-        if start==goal:
-            self.path.append(start)
-            return
-        for i in range(len(graph[start])):
-            if graph[start][i][0] not in self.visited:
-                self.visited.append(graph[start][i][0])
-                temp=self.dfs(graph,graph[start][i][0],goal)
-                if goal in self.path:
-                    self.path.append(start)
-                    return start
-                if temp:
-                    break
+        visited={}
+        parent=None
+        frontier=[]
+        path=deque()
+        frontier.append([start,None])  
+        while frontier:
+            current=frontier.pop()
+            if current[0] not in visited:
+                visited[current[0]]=current[1]
+                current[1]=current[0]
+            if current[0]==goal:
+                break
+            for city in graph[current[0]]:
+                if city[0] not in visited:
+                    frontier.append([city[0],current[1]])
+        if goal not in visited:
+            return []
+        parent=goal
+        while parent:
+            path.appendleft(parent)
+            parent=visited[parent]
+        return path
 
     def ucs(self,graph,start,goal,heuristics=None):
         parent=None
         visited={}
         frontier=[]
         frontier.append((start,0))
-        path=[]
+        path=deque()
         while frontier:
             frontier=sorted(frontier,key= lambda x:x[1],reverse=True)
             current=frontier.pop()
@@ -43,19 +47,22 @@ class Algorithms:
                 if i[0] not in visited:
                     visited[i[0]]=(parent[0],i[1])
                     frontier.append((i[0],i[1]+parent[1]))
-        curr=visited[goal]
-        path.append(goal)
+        if goal in visited:
+            curr=visited[goal]
+        else:
+            return []
+        path.appendleft(goal)
         while curr[0]!=None:
-            path.append(curr[0])
+            path.appendleft(curr[0])
             curr=visited[curr[0]]
-        return path[::-1]
+        return path
             
     def a_star(self,graph,start,goal,heuristics):
         parent=None
         visited={}
         frontier=[]
         frontier.append((start,heuristics[start]))
-        path=[]
+        path=deque()
         while frontier:
             frontier=sorted(frontier,key= lambda x:x[1],reverse=True)
             current=frontier.pop()
@@ -68,12 +75,15 @@ class Algorithms:
                 if i[0] not in visited:
                     visited[i[0]]=(parent[0],i[1])
                     frontier.append((i[0],i[1]+parent[1]+heuristics[i[0]]))
-        curr=visited[goal]
-        path.append(goal)
+        if goal in visited:
+            curr=visited[goal]
+        else:
+            return []
+        path.appendleft(goal)
         while curr[0]!=None:
-            path.append(curr[0])
+            path.appendleft(curr[0])
             curr=visited[curr[0]]
-        return path[::-1]
+        return path
 
     def heuristc_fun(self,start,goal):
         #Read the locations from romenia_locations.txt  file and store it in dictionary.
@@ -94,6 +104,35 @@ class Algorithms:
         distance=round(distance,2)
         return distance
 
+    def dijkstra(self,graph, start):
+        distances = {node: float('inf') for node in graph}
+        distances[start] = 0
+        paths = {node: [start] for node in graph}
+        visited = {}
+        p_queue = [(0, 0, start)]
+        tiebreaker = itertools.count()
+
+        while p_queue:
+            (dist, _, curr_node) = heapq.heappop(p_queue)
+            if curr_node in visited:
+                continue
+            visited[curr_node] = True
+            for (neigh_node, weight) in graph[curr_node]:
+                if neigh_node not in visited:
+                    new_dist = dist + weight
+                    if new_dist < distances[neigh_node]:
+                        distances[neigh_node] = new_dist
+                        paths[neigh_node] = paths[curr_node] + [neigh_node]
+                        heapq.heappush(p_queue, (new_dist, next(tiebreaker), neigh_node))
+
+            for (prev_node, weight) in graph[curr_node]:
+                if prev_node not in visited:
+                    new_dist = dist + weight
+                    if new_dist < distances[prev_node]:
+                        distances[prev_node] = new_dist
+                        paths[prev_node] = paths[curr_node] + [prev_node]
+                        heapq.heappush(p_queue, (new_dist, next(tiebreaker), prev_node))
+        return distances, paths
     # This function will take any algorithm with their start and goal; run it n number of times and return-
     # the average time in MicroSeconds and their solution length.
     def average_calc(self,algorithm,graph,start,goal,n):
@@ -116,28 +155,14 @@ class Algorithms:
             total_time+=span
         avg_time=round(total_time/n,2)
         if (algorithm==self.dfs):
-            print("DFS Algorithm")
-            return f"Average_time:{avg_time} MicroSeconds\nPath_length:{len(self.path)}\nPath:{self.path[::-1]}\n"
+            print(f"DFS Algorithm\n Start:{start}\n Goal:{goal}")
+            print(f"Average_time:{avg_time} MicroSeconds\nPath_length:{len(path)}\nPath:{path}\n")
         elif(algorithm==self.ucs):
-            print("UCS Algorithm")
-            return f"Average_time:{avg_time} MicroSeconds\nPath_length:{len(path)}\nPath:{path}\n"
+            print(f"UCS Algorithm\n Start:{start}\n Goal:{goal}")
+            print(f"Average_time:{avg_time} MicroSeconds\nPath_length:{len(path)}\nPath:{path}\n")
         elif(algorithm==self.a_star):
-            print("A* Search Algorithm")
-            return f"Average_time:{avg_time} MicroSeconds\nPath_length:{len(path)}\nPath:{path}\n"
+            print(f"A* Search Algorithm\n Start:{start}\n Goal:{goal}")
+            print(f"Average_time:{avg_time} MicroSeconds\nPath_length:{len(path)}\nPath:{path}\n")
 
-# Driver code:
 
-# graph={"a":[("c",4),("b",5)],"b":[("d",2),("c",3),("a",5)],"c":[("a",4),("b",3)],"d":[("b",2),("e",1)],"e":[("d",1),("f",6)],"f":[("e",1)]}
-# heuristics={"a":7,"b":3,"c":1,"d":1,"e":0,"f":4}
-# start="a"
-# goal="e"
-# dfs=Algorithms()
-
-# # dfs.dfs(graph,start,goal)
-# # print(dfs.path[::-1])
-
-# # print(dfs.ucs(graph,start,goal))
-
-# # print(dfs.a_star(graph,start,goal,heuristics))
-# print(dfs.heuristc_fun("Pitesti","Pitesti"))
 
