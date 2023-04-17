@@ -3,24 +3,23 @@ import matplotlib.pyplot as plt
 import random
 import Search_algorithms as sa
 
-
+# random.seed(123)
 # Here we add edge Weights
 def edge_weight(graph,p):
     n=graph.number_of_nodes()
-    max_weight=10
+    max_weight=30
     for i in range(n):
         for j in range(i + 1, n):
             if random.random() < p:
                 weight = random.randint(1, max_weight)
-                graph.add_edge(i, j, weight=weight)
+                graph.add_edge(i,j,weight=weight)
 
 # draw the graph,and return a dictionary of node positions                 
 def draw_graph(graph):
     pos = nx.get_node_attributes(graph, 'pos')
-    # print(pos)
     nx.draw(graph, pos=pos, with_labels=True)
     labels = nx.get_edge_attributes(graph, 'weight')
-    nx.draw_networkx_edge_labels(graph, pos, edge_labels=labels, font_size=5)
+    nx.draw_networkx_edge_labels(graph, pos, edge_labels=labels,label_pos=0.8,font_size=8)
 
     plt.title(f'{graph}')
     plt.show()
@@ -28,28 +27,24 @@ def draw_graph(graph):
 
 # Add nodes with consistent positions 
 def add_position(graph):
-    n=graph.number_of_nodes()
+    n=10
     grid_size = int(n ** 0.5)
     spacing = 1 / (grid_size + 1)
     positions = []
     for i in range(0, grid_size + 1): 
         for j in range(0, grid_size + 1):
             positions.append((i * spacing, j * spacing))         
-    # print(positions)
-
     # Add n nodes with consistent positions
     for i in range(n):
         graph.add_node(i, pos=positions[i % len(positions)])
 
 
 algorithms=sa.Algorithms()
-graph_1= nx.erdos_renyi_graph(10, 0.8)
+graph_1= nx.Graph()
 add_position(graph_1)
-edge_weight(graph_1,0.8)
+edge_weight(graph_1,0.2)
 positions=draw_graph(graph_1)
-heuristics=algorithms.random_heuristic_fun(positions,9)
-print(heuristics)
-# algorithms.a_star(graph_1,1,7,heuristics)    #This causes an error on the A* search because we haven't made the adjecencylist yet.
+
 
 # graph_2= nx.erdos_renyi_graph(10, 0.4)
 # add_position(graph_2)
@@ -165,7 +160,7 @@ def random_path_finder(graph):
         if node not in non_island_nodes:
             adj_list[node] = []
 
-    print(adj_list)
+    # print(adj_list)
 
     nodes=list(graph.nodes())
     ten_nodes=random.sample(nodes, k=10)
@@ -174,18 +169,18 @@ def random_path_finder(graph):
     astar_time=[]
     for i in range(len(ten_nodes)):
         for j in range(i+1,len(ten_nodes)):
-            dfs_path=fagaras.average_calc(fagaras.dfs,adj_list,ten_nodes[i],ten_nodes[j],5)
+            dfs_path=fagaras.average_calc(fagaras.dfs,adj_list,ten_nodes[i],ten_nodes[j],10000)
             dfs_time.append((ten_nodes[i],ten_nodes[j],dfs_path[0]))
-            ucs_path=fagaras.average_calc(fagaras.ucs,adj_list,ten_nodes[i],ten_nodes[j],5)
+            ucs_path=fagaras.average_calc(fagaras.ucs,adj_list,ten_nodes[i],ten_nodes[j],10000)
             ucs_time.append((ten_nodes[i],ten_nodes[j],ucs_path[0]))
-            # astar_path=fagaras.average_calc(fagaras.a_star,adj_list,ten_nodes[i],ten_nodes[j],5)
-            # astar_time.append((ten_nodes[i],ten_nodes[j],dfs_path))
-    print(dfs_time)
-    print(ucs_time)
-    return (dfs_time,ucs_time)
+            astar_path=fagaras.average_calc(fagaras.a_star,adj_list,ten_nodes[i],ten_nodes[j],5,positions)
+            astar_time.append((ten_nodes[i],ten_nodes[j],astar_path[0]))
+    # print(dfs_time)
+    # print(ucs_time)
+    return (dfs_time,ucs_time,astar_time)
 def plot_time_graph(graph):
-    dfs,ucs= random_path_finder(graph)
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(10, 5))
+    dfs,ucs,astar= random_path_finder(graph)
+    fig, (ax1, ax2,ax3) = plt.subplots(1, 3, figsize=(10, 5))
     
     # Plot for dfs
     x1 = [f"{t[0]}->{t[1]}" for t in dfs]
@@ -193,7 +188,7 @@ def plot_time_graph(graph):
     ax1.scatter(x1, y1)
     ax1.set_xticklabels(x1, rotation=90, fontsize=5)
     ax1.set_xlabel("a -> b")
-    ax1.set_ylabel("Time in ms")
+    ax1.set_ylabel("Time in Ms")
     ax1.set_title("Time taken between two nodes (dfs)")
 
     # Plot for ucs
@@ -202,8 +197,17 @@ def plot_time_graph(graph):
     ax2.scatter(x2, y2)
     ax2.set_xticklabels(x2, rotation=90, fontsize=5)
     ax2.set_xlabel("a -> b")
-    ax2.set_ylabel("Time in ms")
+    ax2.set_ylabel("Time in Ms")
     ax2.set_title("Time taken between two nodes (ucs)")
 
+    # Plot for dfs
+    x3 = [f"{t[0]}->{t[1]}" for t in astar]
+    y3 = [t[2] for t in astar]
+    ax3.scatter(x3, y3)
+    ax3.set_xticklabels(x3, rotation=90, fontsize=5)
+    ax3.set_xlabel("a -> b")
+    ax3.set_ylabel("Time in Ms")
+    ax3.set_title("Time taken between two nodes (A* Search)")
+
     plt.show()
-# plot_time_graph(graph_1)
+plot_time_graph(graph_1)

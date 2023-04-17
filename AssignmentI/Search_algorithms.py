@@ -10,8 +10,6 @@ graph=graphs.Romenia()
 graph.add()
 romenia_graph=graph.romenia.graph
 
-
-
 class Algorithms:
     def dfs(self,graph,start,goal,heuristics=None):
         visited={}
@@ -170,7 +168,6 @@ class Algorithms:
                     city_name=' '.join(line_lis[:-2])
                     heuristics[city_name]=self.heuristc_fun(city_name,goal)
         elif algorithm == self.a_star and graph!=romenia_graph:
-            print("i'm here")
             heuristics=self.random_heuristic_fun(positions,goal)        
         total_time=0 
         for i in range(n):
@@ -182,14 +179,14 @@ class Algorithms:
             span=(end_instance-start_instance)*1000000
             total_time+=span
         avg_time=round(total_time/n,2)
-        if (algorithm==self.dfs):
-            print(f"DFS Algorithm\n Start:{start}\n Goal:{goal}")
-            print(f"Average_time:{avg_time} MicroSeconds\nPath_length:{len(path)}\nPath:{path}\n")
-        elif(algorithm==self.ucs):
-            print(f"UCS Algorithm\n Start:{start}\n Goal:{goal}")
-            print(f"Average_time:{avg_time} MicroSeconds\nPath_length:{len(path)}\nPath:{path}\n")
-        elif(algorithm==self.a_star):
-            print(f"A* Search Algorithm\n Start:{start}\n Goal:{goal}")
-            print(f"Average_time:{avg_time} MicroSeconds\nPath_length:{len(path)}\nPath:{path}\n")
+        # if (algorithm==self.dfs):
+        #     print(f"DFS Algorithm\n Start:{start}\n Goal:{goal}")
+        #     print(f"Average_time:{avg_time} MicroSeconds\nPath_length:{len(path)}\nPath:{path}\n")
+        # elif(algorithm==self.ucs):
+        #     print(f"UCS Algorithm\n Start:{start}\n Goal:{goal}")
+        #     print(f"Average_time:{avg_time} MicroSeconds\nPath_length:{len(path)}\nPath:{path}\n")
+        # elif(algorithm==self.a_star):
+        #     print(f"A* Search Algorithm\n Start:{start}\n Goal:{goal}")
+        #     print(f"Average_time:{avg_time} MicroSeconds\nPath_length:{len(path)}\nPath:{path}\n")
         return (avg_time, None)
 
