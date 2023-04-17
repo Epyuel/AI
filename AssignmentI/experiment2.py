@@ -3,29 +3,53 @@ import matplotlib.pyplot as plt
 import random
 import Search_algorithms as sa
 
-def edge_weight(graph):
-   for u,v in graph.edges():
-    graph[u][v]['weight']= round(random.randint(1, 100))
+
+# Here we add edge Weights
+def edge_weight(graph,p):
+    n=graph.number_of_nodes()
+    max_weight=10
+    for i in range(n):
+        for j in range(i + 1, n):
+            if random.random() < p:
+                weight = random.randint(1, max_weight)
+                graph.add_edge(i, j, weight=weight)
+
+# draw the graph,and return a dictionary of node positions                 
 def draw_graph(graph):
-    pos = nx.spring_layout(graph)
-    nx.draw(graph, pos, with_labels=True)
+    pos = nx.get_node_attributes(graph, 'pos')
+    # print(pos)
+    nx.draw(graph, pos=pos, with_labels=True)
     labels = nx.get_edge_attributes(graph, 'weight')
     nx.draw_networkx_edge_labels(graph, pos, edge_labels=labels, font_size=5)
 
     plt.title(f'{graph}')
     plt.show()
-def add_position(graph):
-    pos_dict={}
-    for i, node in enumerate(graph.nodes()):
-        pos_dict[node] = (random.uniform(-50, 50), random.uniform(-50, 50))
-    nx.set_node_attributes(graph, pos_dict, 'coord')
+    return pos
 
-graph_1= nx.erdos_renyi_graph(10, 0.2)
+# Add nodes with consistent positions 
+def add_position(graph):
+    n=graph.number_of_nodes()
+    grid_size = int(n ** 0.5)
+    spacing = 1 / (grid_size + 1)
+    positions = []
+    for i in range(0, grid_size + 1): 
+        for j in range(0, grid_size + 1):
+            positions.append((i * spacing, j * spacing))         
+    # print(positions)
+
+    # Add n nodes with consistent positions
+    for i in range(n):
+        graph.add_node(i, pos=positions[i % len(positions)])
+
+
+algorithms=sa.Algorithms()
+graph_1= nx.erdos_renyi_graph(10, 0.8)
 add_position(graph_1)
-pos_dict=nx.get_node_attributes(graph_1,'coord')
-print(pos_dict)
-edge_weight(graph_1)
-draw_graph(graph_1)
+edge_weight(graph_1,0.8)
+positions=draw_graph(graph_1)
+heuristics=algorithms.random_heuristic_fun(positions,9)
+print(heuristics)
+# algorithms.a_star(graph_1,1,7,heuristics)    #This causes an error on the A* search because we haven't made the adjecencylist yet.
 
 # graph_2= nx.erdos_renyi_graph(10, 0.4)
 # add_position(graph_2)
@@ -110,12 +134,12 @@ draw_graph(graph_1)
 # edge_weight(graph_15)
 # draw_graph(graph_15)
 
-graph_16= nx.erdos_renyi_graph(40, 0.8)
-add_position(graph_16)
-pos_dict=nx.get_node_attributes(graph_16,'pos')
-print(pos_dict)
-edge_weight(graph_16)
-draw_graph(graph_16)
+# graph_16= nx.erdos_renyi_graph(40, 0.8)
+# add_position(graph_16)
+# pos_dict=nx.get_node_attributes(graph_16,'pos')
+# print(pos_dict)
+# edge_weight(graph_16)
+# draw_graph(graph_16)
 
 
 
@@ -182,4 +206,4 @@ def plot_time_graph(graph):
     ax2.set_title("Time taken between two nodes (ucs)")
 
     plt.show()
-plot_time_graph(graph_16)
+# plot_time_graph(graph_1)

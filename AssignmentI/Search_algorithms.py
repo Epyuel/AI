@@ -3,6 +3,14 @@ import itertools
 import time
 from collections import deque
 from numpy import sin, cos, arccos, pi, round
+import graphs
+
+
+graph=graphs.Romenia()
+graph.add()
+romenia_graph=graph.romenia.graph
+
+
 
 class Algorithms:
     def dfs(self,graph,start,goal,heuristics=None):
@@ -133,18 +141,37 @@ class Algorithms:
                         paths[prev_node] = paths[curr_node] + [prev_node]
                         heapq.heappush(p_queue, (new_dist, next(tiebreaker), prev_node))
         return distances, paths
+    
+    #Calculate the Manhattan Distance 
+    def manhattan_distance(self,positions,start,goal):
+        x1,y1=positions[start]
+        x2,y2=positions[goal]
+        dis=abs(x2-x1)+abs(y2-y1)
+        return dis
+    
+    #Calculate the heuristic value corsponding to a particular goal, and return a dictionary of 
+    # heuristic value of each node
+    def random_heuristic_fun(self,positions,goal):
+        heuristics={}
+        for node in positions:
+            heuristics[node]=self.manhattan_distance(positions,node,goal)
+        return heuristics
+
     # This function will take any algorithm with their start and goal; run it n number of times and return-
     # the average time in MicroSeconds and their solution length.
-    def average_calc(self,algorithm,graph,start,goal,n):
+    def average_calc(self,algorithm,graph,start,goal,n,positions=None):
         heuristics={}
-        if algorithm == self.a_star:
+        if algorithm == self.a_star and graph==romenia_graph:
             with open("romenia_locations.txt","r") as file:
                 for line in file:
                     if line.startswith("City"):
                         continue
                     line_lis=line.split()
                     city_name=' '.join(line_lis[:-2])
-                    heuristics[city_name]=self.heuristc_fun(city_name,goal)        
+                    heuristics[city_name]=self.heuristc_fun(city_name,goal)
+        elif algorithm == self.a_star and graph!=romenia_graph:
+            print("i'm here")
+            heuristics=self.random_heuristic_fun(positions,goal)        
         total_time=0 
         for i in range(n):
 
