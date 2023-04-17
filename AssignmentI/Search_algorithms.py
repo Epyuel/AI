@@ -188,5 +188,5 @@ class Algorithms:
         # elif(algorithm==self.a_star):
         #     print(f"A* Search Algorithm\n Start:{start}\n Goal:{goal}")
         #     print(f"Average_time:{avg_time} MicroSeconds\nPath_length:{len(path)}\nPath:{path}\n")
-        return (avg_time, None)
+        return (avg_time, len(path))
 
