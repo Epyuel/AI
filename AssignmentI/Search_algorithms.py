@@ -137,13 +137,14 @@ class Algorithms:
     # the average time in MicroSeconds and their solution length.
     def average_calc(self,algorithm,graph,start,goal,n):
         heuristics={}
-        with open("romenia_locations.txt","r") as file:
-            for line in file:
-                if line.startswith("City"):
-                    continue
-                line_lis=line.split()
-                city_name=' '.join(line_lis[:-2])
-                heuristics[city_name]=self.heuristc_fun(city_name,goal)        
+        if algorithm == self.a_star:
+            with open("romenia_locations.txt","r") as file:
+                for line in file:
+                    if line.startswith("City"):
+                        continue
+                    line_lis=line.split()
+                    city_name=' '.join(line_lis[:-2])
+                    heuristics[city_name]=self.heuristc_fun(city_name,goal)        
         total_time=0 
         for i in range(n):
 
@@ -163,6 +164,5 @@ class Algorithms:
         elif(algorithm==self.a_star):
             print(f"A* Search Algorithm\n Start:{start}\n Goal:{goal}")
             print(f"Average_time:{avg_time} MicroSeconds\nPath_length:{len(path)}\nPath:{path}\n")
-
-
+        return (avg_time, None)
 
