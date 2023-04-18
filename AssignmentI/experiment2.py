@@ -209,7 +209,7 @@ def plot_time_graph():
     lst=avg_time()
     fig, (ax, ax2) = plt.subplots(1, 2, figsize=(10, 5))
     nodes = [t[0] for t in lst]
-    prob = [t[1]*100 for t in lst]
+    prob = [t[1]*50 for t in lst]
     dfs_time = [t[2] for t in lst]
     ucs_time = [t[3] for t in lst]
     astar_time = [t[4] for t in lst]
@@ -217,22 +217,23 @@ def plot_time_graph():
     ucs_path = [t[6] for t in lst]
     astar_path = [t[7] for t in lst]
 
-    ax.scatter(nodes,dfs_time,c='blue',s=prob,label='dfs time')
-    ax.scatter(nodes,ucs_time,c='red',s=prob,label='ucs time')
-    ax.scatter(nodes,ucs_time,c='green',s=prob,label='astar time')
+    ax.scatter(nodes,dfs_time,c='blue',s=prob,label='dfs time',alpha=0.5)
+    ax.scatter(nodes,ucs_time,c='red',s=prob,label='ucs time',alpha=0.5)
+    ax.scatter(nodes,ucs_time,c='green',s=prob,label='astar time',alpha=0.5)
 
     ax.set_xlabel('nodes')
     ax.set_ylabel('time')
     ax.set_title('time-node Plot')
+    ax.legend()
 
-    ax2.scatter(nodes,dfs_path,c='blue',s=prob,label='dfs time')
-    ax2.scatter(nodes,ucs_path,c='red',s=prob,label='ucs time')
-    ax2.scatter(nodes,astar_path,c='green',s=prob,label='astar time')
+    ax2.scatter(nodes,dfs_path,c='blue',s=prob,label='dfs path',alpha=0.5)
+    ax2.scatter(nodes,ucs_path,c='red',s=prob,label='ucs path',alpha=0.5)
+    ax2.scatter(nodes,astar_path,c='green',s=prob,label='astar path',alpha=0.5)
 
     ax2.set_xlabel('nodes')
     ax2.set_ylabel('path')
     ax2.set_title('path-node Plot')
-
-    plt.legend()
+    ax2.legend()
+    
     plt.show()
 plot_time_graph()
